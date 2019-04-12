@@ -1,5 +1,6 @@
 package com.zwj.springboot.demo.service.impl;
 
+import com.zwj.springboot.demo.cache.RedisService;
 import com.zwj.springboot.demo.mapper.StudentMapper;
 import com.zwj.springboot.demo.model.Student;
 import com.zwj.springboot.demo.service.StudentService;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Service;
 public class StudentServiceImp implements StudentService {
     @Autowired
     private StudentMapper studentMapper;
+
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public int add(Student student) {
@@ -29,5 +33,15 @@ public class StudentServiceImp implements StudentService {
     @Override
     public Student queryStudentBySno(String sno) {
         return this.studentMapper.queryStudentBySno(sno);
+        //使用redis缓存
+        /*String key = "queryStudentBySno" + ":" + sno;
+        Object obj = redisService.get(key);
+        if(obj != null){
+            return (Student) obj;
+        }else{
+            Student student = this.studentMapper.queryStudentBySno(sno);
+            redisService.set(key, student,60L);
+            return student;
+        }*/
     }
 }
